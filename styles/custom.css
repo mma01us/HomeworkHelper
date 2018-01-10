@@ -1,0 +1,207 @@
+.btn-primary {
+	background-color: #36D7B7;
+	border: solid #36D7B7;
+}
+
+.btn-primary:hover {
+	background-color: #26C281;
+	border: solid #26C281;
+}
+
+/* General button style (reset) */
+.btn {
+	border: none;
+	background: none;
+	cursor: pointer;
+	padding: 10px 35px;
+	display: inline-block;
+	margin: 10px 15px;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	outline: none;
+	position: relative;
+	-webkit-transition: all 0.3s;
+	-o-transition: all 0.3s;
+	-moz-transition: all 0.3s;
+	transition: all 0.3s;
+}
+
+.btn-login {
+    font-family: 'Mada', sans-serif;
+}
+
+.btn:after {
+	content: '';
+	position: absolute;
+	z-index: -1;
+	-webkit-transition: all 0.3s;
+	-moz-transition: all 0.3s;
+	-o-transition: all 0.3s;
+	transition: all 0.3s;
+}
+
+/* Button 1 */
+.btn-1 {
+	border: 3px solid #1CD8D2;
+	color: #89867e;
+}
+
+/* Button 1a */
+.btn-1a:hover,
+.btn-1a:active {
+	color: #f2f2f4;
+	background: #1CD8D2;
+}
+
+.black_overlay {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  z-index: 1001;
+  -moz-opacity: 0.8;
+  opacity: .80;
+  filter: alpha(opacity=80), blur(3px);
+  -webkit-filter: blur(3px);
+}
+
+body {
+    font-family: 'Mada', sans-serif;
+    color: #484848;
+    background-color: #f2f2f4;
+}
+
+.p1{
+    color: #89867e;
+    font-size: 20px;
+}
+
+.back{
+    background-color: #1CD8D2;
+}
+
+.main {
+    padding: 15px;
+}
+
+.btn.btn-sm {
+    font-size: 9px;
+    padding: 0 5px;
+    margin: 0;
+}
+
+h1{
+    font-family: 'Mada', sans-serif;
+    color: #000;
+    font-weight: bold;
+    font-size: 55px;
+}
+
+.footer {
+    position: fixed;
+    bottom: 5px;
+    right: 5px;
+    font-size: 10px;
+}
+.navbar {
+    background-color: #1CD8D2;
+    border-radius: 0;
+    color: white;
+    padding: 0;
+    padding-left: 20%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin: 0;
+}
+.navbar .navbar-brand{
+    color: white;
+    font-weight: bold;
+    padding: inheret;
+}
+
+.navbar .navbar-brand:hover, .navbar .navbar-brand:active, .navbar .navbar-brand:focus {
+    color: white;
+}
+.dropdown {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-right: 15px;
+    padding: 3px 5px;
+    height: 20px;
+    font-size: 13px;
+    border-radius: 3px;
+    line-height: 14px;
+}
+.dropdown-toggle {
+    cursor: pointer;
+    border: none;
+    padding: 0px;
+    margin: 0px;
+    color: white;
+    background-color: transparent;
+}
+.dropdown ul.dropdown-menu {
+    right: 0px;
+    left: auto;
+    margin-top: 15px;
+    border: none;
+    background-color: #fff;
+    border-radius: 3px;
+    box-shadow: 0 0 10px rgba(0,0,0,.5);
+    z-index: 999;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+.dropdown-menu .arrow {
+    display: block;
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-color: transparent;
+    border-width: 10px;
+    border-style: solid;
+    border-bottom-color: #fff;
+    border-top-width: 0;
+    margin-top: -12px;
+    margin-left: 110px;
+}
+.dropdown-menu li {
+    padding: 8px;
+    padding-left: 15px;
+    font-size: 14px;
+}
+.dropdown-menu li a {
+    color: #484848;
+    text-decoration: none;
+}
+.dropdown-menu li a:hover {
+    color: #969696;
+    text-decoration: none;
+}
+.dropdown:hover {
+    background-color: rgba(0,0,0,.2);
+}
+.control-group {
+    margin-bottom: 10px;
+}
+.help-inline.danger {
+    font-size: 80%;
+    font-weight: 400;
+    color: red;
+}
+.path {
+    font-family: monospace;
+}
+.custom-control-input:focus~.custom-control-indicator {
+    box-shadow: none;
+}
+.nav > a {
+    color: white;
+}
+.nav > a:hover, .nav > a:focus {
+    color: #cccccc;
+    text-decoration: none;
+}

@@ -75,65 +75,17 @@ app.get('/',
     {
         var dataObj = {} ;
         //
-        dataObj.myTitle = 'ION index' ;
-        dataObj.myLink  = authorizationUri ;
+        dataObj.pageTitle = 'Homework Helper - Login';
+        dataObj.loginLink  = authorizationUri;
         //
         if (typeof req.session.token != 'undefined')
         {
             // IF THE USER HAS LOGGED IN...token.token.access_token!
-            var access_token = req.session.token.token.access_token;
-            //
-            // ASK ION FOR THE USER NAME...and other information
-            request.get(
-                {
-                    url : irl + 'api/profile?format=json&access_token='+access_token
-                } , 
-                function( error , result , body )
-                {
-                    var resObj = JSON.parse( body ) ;
-                    //
-                    dataObj.yourName = resObj['short_name'] ;
-                    //
-                    dataObj.yourInfo = {} ;
-                    //
-                    dataObj.yourInfo.email = resObj['tj_email'];
-                    dataObj.yourInfo.first = resObj['first_name'];
-                    dataObj.yourInfo.last = resObj['last_name'];
-                    dataObj.yourInfo.type = resObj['user_type'];
-                    dataObj.yourInfo.picture = resObj['picture'];
-                    res.render( 'auth' , dataObj ) ;
-                }
-            );
-            
-            var con = mysql.createConnection({
-                host: "mysql1.csl.tjhsst.edu",
-                user: "site_2019mma",
-                password: "NqsmYJHHN7rbwwFvchT3SzXz",
-                database : "site_2019mma"
-            });
-            
-            con.connect(function(err) {
-                if (err) throw err;
-                console.log("Connected!");
-                con.query('SELECT * FROM colors', function (err, result) {
-                    if (err) throw err;
-                    for(var key in Object.keys(result)){
-                        console.log(key + ": " + result[key]['color_name']);
-                    }
-                });
-            });
+            res.redirect('home');
         } 
         else 
         {
-            dataObj.yourName  = 'NEW_USER' ;
-            //
-            dataObj.yourInfo  = {} ;
-            //
-            dataObj.yourInfo.key1 = 'val1' ;
-            dataObj.yourInfo.key2 = 'val2' ;
-            dataObj.yourInfo.key3 = 'val3' ;
-            //
-            res.render( 'auth' , dataObj ) ;
+            res.render('login', dataObj) ;
         }
     }
 );
@@ -153,10 +105,10 @@ app.get('/login',
         oauth2.authorizationCode.getToken(options , 
             function(error, result)
             {
-                if (error) // to do... make this more graceful
+                if(error)
                 {
                     console.log(error);
-                    return res.json('Authentication failed') ;
+                    return res.redirect('https://user.tjhsst.edu/2019mma/') ;
                 }
                 //
                 // TURN THE RESULT INTO A TOKEN
@@ -166,23 +118,42 @@ app.get('/login',
                 req.session.token = token ;
                 //
                 // Redirect authenticated user home
-                res.redirect('https://user.tjhsst.edu/2019mma/') ; // will go back to slash
+                res.redirect('https://user.tjhsst.edu/2019mma/home') ;
             }
         );
     }
 );
-//
-// end of file
-//
-// https://stackoverflow.com/questions/18864677/what-is-process-env-port-in-node-js
-// Run with sudo for ports below 1024.  These are priveleged.  Must be run as root.
-/*
-RFC 1060 Assigned Numbers March 1990 {Next RFC gave HTTP port 80. -Ed}
-PORT NUMBERS Ports are used in the TCP [45,106] to name the ends of logical
-connections which carry long term conversations.  For the purpose of
-providing services to unknown callers, a service contact port is defined.
-This list specifies the port used by the server process as its contact
-port.  The contact port is sometimes called the "well-known port".
-To the extent possible, these same port assignments are used with the
-UDP [46,104].  {UDP does no error checking or re-sending of data. -Ed}
-*/
+
+app.get('/home', function(req, res){
+    var dataObj = {};
+    dataObj.pageTitle = 'Homework Helper - Home';
+    
+    if (typeof req.session.token != 'undefined')
+    {
+        // IF THE USER HAS LOGGED IN...token.token.access_token!
+        res.render('home', dataObj);
+    }
+    else 
+    {
+        res.redirect('https://user.tjhsst.edu/2019mma/');
+    }
+});
+
+app.use(function(req, res, next){
+  res.status(404);
+
+  // respond with html page
+  if (req.accepts('html')) {
+    res.render('404', { url: req.url });
+    return;
+  }
+
+  // respond with json
+  if (req.accepts('json')) {
+    res.send({ error: 'Not found' });
+    return;
+  }
+
+  // default to plain-text. send()
+  res.type('txt').send('Not found');
+});
