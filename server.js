@@ -75,7 +75,7 @@ app.get('/',
     {
         var dataObj = {} ;
         //
-        dataObj.pageTitle = 'Homework Helper - Login';
+        dataObj.pageTitle = 'Login';
         dataObj.loginLink  = authorizationUri;
         //
         if (typeof req.session.token != 'undefined')
@@ -126,7 +126,7 @@ app.get('/login',
 
 app.get('/home', function(req, res){
     var dataObj = {};
-    dataObj.pageTitle = 'Homework Helper - Home';
+    dataObj.pageTitle = 'Home';
     
     if (typeof req.session.token != 'undefined')
     {
