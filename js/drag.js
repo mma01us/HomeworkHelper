@@ -1,3 +1,5 @@
+//based on https://www.html5rocks.com/en/tutorials/dnd/basics/
+
 var dragSrcEl = null;
 
 /*var dragIcon = document.createElement('img');
@@ -12,7 +14,17 @@ function handleDragStart(e) {
   dragSrcEl = this;
 
   e.dataTransfer.effectAllowed = 'move';
-  e.dataTransfer.setData('text/html', this.innerHTML);
+  e.dataTransfer.setData('text/html', this.innerHTML); //Sets data to the text in the inner html
+}
+
+function handleDragOver(e) {
+  if (e.preventDefault) {
+    e.preventDefault(); // Necessary. Allows us to drop.
+  }
+
+  e.dataTransfer.dropEffect = 'move';  // See the section on the DataTransfer object.
+
+  return false;
 }
 
 function handleDragEnter(e) {
@@ -46,10 +58,12 @@ function handleDragEnd(e) {
 
   [].forEach.call(cols, function (col) {
     col.classList.remove('over');
+    col.style.opacity = '1';
   });
 }
 
-var cols = document.querySelectorAll('#columns .todo-item');
+var cols = document.querySelectorAll("div.todo");
+console.log(cols);
 [].forEach.call(cols, function(col) {
     col.addEventListener('dragstart', handleDragStart, false);
     col.addEventListener('dragenter', handleDragEnter, false);
