@@ -115,7 +115,7 @@ app.get('/login',
                 var token = oauth2.accessToken.create( result ) ;
                 //
                 // ATTACH THE TOKEN TO OUR COOKIE SESSION
-                req.session.token = token ;
+                req.session.token = token;
                 //
                 // Redirect authenticated user home
                 res.redirect('https://user.tjhsst.edu/2019mma/home') ;
@@ -131,7 +131,63 @@ app.get('/home', function(req, res){
     if (typeof req.session.token != 'undefined')
     {
         // IF THE USER HAS LOGGED IN...token.token.access_token!
-        res.render('home', dataObj);
+        var access_token = req.session.token.token.access_token;
+        // ASK ION FOR THE USER NAME...and other information
+        request.get(
+            {
+                url : irl + 'api/profile?format=json&access_token='+access_token
+            } , 
+            function( error , result , body )
+            {
+                var resObj = JSON.parse( body );
+                //
+                dataObj.name = resObj['short_name'];
+                dataObj.username = resObj['ion_username'];
+                dataObj.email = resObj['tj_email'];
+                dataObj.first = resObj['first_name'];
+                dataObj.last = resObj['last_name'];
+                
+                var con = mysql.createConnection({
+                    host: "mysql1.csl.tjhsst.edu",
+                    user: "site_2019mma",
+                    password: "NqsmYJHHN7rbwwFvchT3SzXz",
+                    database : "site_2019mma",
+                    multipleStatements: true
+                });
+                
+                con.connect(function(err) {
+                    if (err) throw err;
+                    console.log("Connected to SQL!");
+                    //default user creation
+                    con.query(`INSERT INTO users (fname, lname, tutorial, email, username) SELECT * FROM 
+                    (SELECT '` + dataObj.name + `', '` + dataObj.last + `', 1,'` + dataObj.email + `', '` + dataObj.username + `') 
+                    AS tempvals WHERE NOT EXISTS (SELECT username FROM users WHERE username = '` + dataObj.username + `') LIMIT 1;`, function (err, result) {
+                        if (err) throw err;
+                    });
+                    
+                    /*con.query("SELECT * FROM users WHERE username='" + dataObj.username +"' LIMIT 1;", function(err, result){
+                        if(err)
+                            throw err;
+                        console.log(result);
+                    });*/
+                });
+                
+                res.render('home', dataObj);
+            }
+        );
+    }
+    else 
+    {
+        res.redirect('https://user.tjhsst.edu/2019mma/');
+    }
+});
+
+app.get('/signout', function(req, res){
+    if (typeof req.session.token != 'undefined')
+    {
+        req.session.token = undefined;
+        
+        res.redirect('https://user.tjhsst.edu/2019mma/');
     }
     else 
     {
