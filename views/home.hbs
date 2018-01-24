@@ -6,6 +6,7 @@
         {{pageTitle}}
     </title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="./styles/custom.css">
     <link rel="stylesheet" href="./styles/items.css">
     <link href="https://fonts.googleapis.com/css?family=Mada" rel="stylesheet">
@@ -13,7 +14,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light">
         <a class="navbar-brand" href="./home">
-            LOGO
+            TODO LIST
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -50,73 +51,25 @@
     
     <div class='todo-container'>
         <div id='todo-dragEnd'>
+            {{#each todos}}
             <div class='card todo' draggable='true'>
                 <div class="card-header">
-                    <h1>Item 1</h1>
+                    <h1>{{title}}</h1>
                 </div>
                 <div class="card-body">
-                    <p>Value 1</p>
+                    <div>
+                        <button id='complete-{{id}}' class='btn btn-small btn-outline-success' style='float: left; margin-top: 0;' onclick="finish(this.id);"><i class="fa fa-check-square-o"></i></button>
+                        <span>{{details}}</span>
+                        <button id='trash-{{id}}' class='btn btn-small btn-outline-danger' style='float: right; margin-top: 0;' onclick="trash(this.id);"><i class="fa fa-trash"></i></button>
+                    </div>
                 </div>
             </div>
-            <div class='card todo' draggable='true'>
-                <div class="card-header">
-                    <h1>Item 1</h1>
-                </div>
-                <div class="card-body">
-                    <p>Value 1</p>
-                </div>
-            </div>
-            <div class='card todo' draggable='true'>
-                <div class="card-header">
-                    <h1>Item 1</h1>
-                </div>
-                <div class="card-body">
-                    <p>Value 1</p>
-                </div>
-            </div>
-            <div class='card todo' draggable='true'>
-                <div class="card-header">
-                    <h1>Item 1</h1>
-                </div>
-                <div class="card-body">
-                    <p>Value 1</p>
-                </div>
-            </div>
-            <div class='card todo' draggable='true'>
-                <div class="card-header">
-                    <h1>Item 1</h1>
-                </div>
-                <div class="card-body">
-                    <p>Value 1</p>
-                </div>
-            </div>
-            <div class='card todo' draggable='true'>
-                <div class="card-header">
-                    <h1>Item 1</h1>
-                </div>
-                <div class="card-body">
-                    <p>Value 1</p>
-                </div>
-            </div>
-            <div class='card todo' draggable='true'>
-                <div class="card-header">
-                    <h1>Item 1</h1>
-                </div>
-                <div class="card-body">
-                    <p>Value 1</p>
-                </div>
-            </div>
-            <div class='card todo' draggable='true'>
-                <div class="card-header">
-                    <h1>Item 1</h1>
-                </div>
-                <div class="card-body">
-                    <p>Value 1</p>
-                </div>
-            </div>
+            {{/each}}
         </div>
     </div>
     <script src="./js/drag.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+    <script src="./js/home.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>

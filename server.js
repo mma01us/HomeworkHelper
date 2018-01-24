@@ -10,6 +10,10 @@ var cookieSession = require('cookie-session');
 var simpleoauth2 = require('simple-oauth2');
 var request = require('request');
 var mysql = require('mysql');
+var http = require('http');
+var server = require('http').createServer(app);
+var io = require('socket.io').listen(server);
+var path = require('path');
 app.set('view model', 'hbs');
 app.set('view engine', 'hbs');
 hbs.Handlebars = require('handlebars');
@@ -69,14 +73,25 @@ var authorizationUri = oauth2.authorizationCode.authorizeURL(
         redirect_uri : 'https://user.tjhsst.edu/2019mma/login/'
     }
 );
+
+function createTodoElement(name, details){
+    return `<div class='card todo' draggable='true'>
+        <div class="card-header">
+            <h1>` + name + `</h1>
+        </div>
+        <div class="card-body">
+            <p>` + details + `</p>
+        </div>
+    </div>\n`;
+}
 //
 app.get('/',
     function(req, res)
     {
-        var dataObj = {} ;
+        var context = {} ;
         //
-        dataObj.pageTitle = 'Login';
-        dataObj.loginLink  = authorizationUri;
+        context.pageTitle = 'Login';
+        context.loginLink  = authorizationUri;
         //
         if (typeof req.session.token != 'undefined')
         {
@@ -85,7 +100,7 @@ app.get('/',
         } 
         else 
         {
-            res.render('login', dataObj) ;
+            res.render('login', context) ;
         }
     }
 );
@@ -125,8 +140,8 @@ app.get('/login',
 );
 
 app.get('/home', function(req, res){
-    var dataObj = {};
-    dataObj.pageTitle = 'Home';
+    var context = {};
+    context.pageTitle = 'Home';
     
     if (typeof req.session.token != 'undefined')
     {
@@ -141,11 +156,11 @@ app.get('/home', function(req, res){
             {
                 var resObj = JSON.parse( body );
                 //
-                dataObj.name = resObj['short_name'];
-                dataObj.username = resObj['ion_username'];
-                dataObj.email = resObj['tj_email'];
-                dataObj.first = resObj['first_name'];
-                dataObj.last = resObj['last_name'];
+                context.name = resObj['short_name'];
+                context.username = resObj['ion_username'];
+                context.email = resObj['tj_email'];
+                context.first = resObj['first_name'];
+                context.last = resObj['last_name'];
                 
                 var con = mysql.createConnection({
                     host: "mysql1.csl.tjhsst.edu",
@@ -160,19 +175,38 @@ app.get('/home', function(req, res){
                     console.log("Connected to SQL!");
                     //default user creation
                     con.query(`INSERT INTO users (fname, lname, tutorial, email, username) SELECT * FROM 
-                    (SELECT '` + dataObj.name + `', '` + dataObj.last + `', 1,'` + dataObj.email + `', '` + dataObj.username + `') 
-                    AS tempvals WHERE NOT EXISTS (SELECT username FROM users WHERE username = '` + dataObj.username + `') LIMIT 1;`, function (err, result) {
+                    (SELECT '` + context.name + `', '` + context.last + `', 1,'` + context.email + `', '` + context.username + `') 
+                    AS tempvals WHERE NOT EXISTS (SELECT username FROM users WHERE username = '` + context.username + `') LIMIT 1;`, function (err, result) {
                         if (err) throw err;
+                        
+                        con.query("SELECT id FROM users WHERE username='" + context.username +"' LIMIT 1;", function(err, result){
+                            if(err)
+                                throw err;
+                            context.userid = result[0].id;
+                            
+                            con.query("SELECT * FROM todo WHERE userid=" + context.userid + " AND done=0;", function(err, result){
+                                context.todos = [];
+                                if(err)
+                                    throw err;
+                                try{
+                                    console.log(result);
+                                    for(var r in Object.keys(result)){
+                                        context.todos.push({
+                                            id: result[r].id,
+                                            title: result[r].name,
+                                            details: result[r].description
+                                        });
+                                    }
+                                }
+                                catch (err){
+                                    console.log(err);
+                                }
+                                console.log(context.todos);
+                                res.render('home', context);
+                            });
+                        });
                     });
-                    
-                    /*con.query("SELECT * FROM users WHERE username='" + dataObj.username +"' LIMIT 1;", function(err, result){
-                        if(err)
-                            throw err;
-                        console.log(result);
-                    });*/
                 });
-                
-                res.render('home', dataObj);
             }
         );
     }
@@ -212,4 +246,68 @@ app.use(function(req, res, next){
 
   // default to plain-text. send()
   res.type('txt').send('Not found');
+});
+
+io.on('connection',function(socket){
+    console.log("Connection made with server");
+    
+    socket.on('create_todo', function(data){
+        console.log("Todo created with data: ");
+        console.log(data);
+        var con = mysql.createConnection({
+                host: "mysql1.csl.tjhsst.edu",
+                user: "site_2019mma",
+                password: "NqsmYJHHN7rbwwFvchT3SzXz",
+                database : "site_2019mma",
+                multipleStatements: true
+            });
+                
+        con.connect(function(err) {
+            if (err) throw err;
+            con.query(`INSERT INTO todo (name, description, userid) VALUES('` + data.name + 
+            `', '` + data.details + `', '` + data.userid + `');`, function (err, result) {
+                if (err) throw err;
+            });
+        });
+    });
+    
+    socket.on('finish_todo', function(data){
+        console.log("Todo created with data: ");
+        console.log(data);
+        var con = mysql.createConnection({
+                host: "mysql1.csl.tjhsst.edu",
+                user: "site_2019mma",
+                password: "NqsmYJHHN7rbwwFvchT3SzXz",
+                database : "site_2019mma",
+                multipleStatements: true
+            });
+                
+        con.connect(function(err) {
+            if (err) throw err;
+            con.query(`UPDATE todo SET done = 1 WHERE id=` + data + `;`, function (err, result) {
+                if (err) throw err;
+                console.log("Finished");
+            });
+        });
+    });
+    
+    socket.on('delete_todo', function(data){
+        console.log("Deleted todo with data: ");
+        console.log(data);
+        var con = mysql.createConnection({
+                host: "mysql1.csl.tjhsst.edu",
+                user: "site_2019mma",
+                password: "NqsmYJHHN7rbwwFvchT3SzXz",
+                database : "site_2019mma",
+                multipleStatements: true
+            });
+                
+        con.connect(function(err) {
+            if (err) throw err;
+            con.query(`DELETE FROM todo WHERE id=` + data + `;`, function (err, result) {
+                if (err) throw err;
+                console.log("Deleted");
+            });
+        });
+    });
 });
